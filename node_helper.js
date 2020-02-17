@@ -40,7 +40,11 @@ module.exports = NodeHelper.create({
         var self = this;
         // Target hosts/network supplied in config or entire localnet
         var arpHosts = this.config.network || '-l';
-        var arp = sudo(['arp-scan', '-q', arpHosts]);
+				var options = {              
+						cachePassword: true,
+						prompt: 'Password,' + this.config.Password     // put your password where ???? are (notice the quotes around)
+				}
+        var arp = sudo(['arp-scan', '-q', arpHosts], options);
         var buffer = '';
         var errstream = '';
         var discoveredMacAddresses = [];
