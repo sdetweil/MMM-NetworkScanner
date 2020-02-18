@@ -46,7 +46,13 @@ Module.register("MMM-NetworkScanner", {
 
 		this.sendSocketNotification('CONFIG', this.config);
 
-		this.scanNetwork();
+		//this.scanNetwork();
+	},
+	
+	notificationReceived: function(notification, payload, source){
+		 if(notification=='ALL_MODULES_STARTED'){
+			 this.scanNetwork();
+		 }
 	},
 
 	// Subclass getStyles method.
