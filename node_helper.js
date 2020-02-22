@@ -10,41 +10,45 @@
 const NodeHelper = require("node_helper");
 const ping = require("ping");
 const sudo = require("sudo");
-
+let_ourThis=null;
 module.exports = NodeHelper.create({
     
     start: function function_name () {
+				_ourThis=this;			
         this.log("Starting module: " + this.name);
+
     },
 
     // Override socketNotificationReceived method.
     socketNotificationReceived: function(notification, payload) {
-        this.log(this.name + " received " + notification);
+			let self = _ourThis
+        self.log(self.name + " received " + notification);
 
         if (notification === "CONFIG") {
-            this.config = payload;
+            self.config = payload;
             return true;
         }
 
         if (notification === "SCAN_NETWORK") {
-            this.scanNetworkMAC();
-            this.scanNetworkIP();
+            self.scanNetworkMAC();
+            self.scanNetworkIP();
             return true;
         }
 
     },
 
     scanNetworkMAC: function() {
-        this.log(this.name + " is performing arp-scan");
+			  let self = _ourThis;
+        self.log(self.name + " is performing arp-scan");
 
-        var self = this;
+
         // Target hosts/network supplied in config or entire localnet
-        var arpHosts = this.config.network || '-l';
+        var arpHosts = self.config.network || '-l';
 				var options = {              
 						cachePassword: true,
-						prompt: 'Password,' + this.config.Password     // put your password where ???? are (notice the quotes around)
+						prompt: 'Password,' + self.config.Password     // put your password where ???? are (notice the quotes around)
 				}
-        var arp = sudo(['arp-scan', '-q', arpHosts], options);
+        var arp = sudo(['arp-scan', '-q', arpHosts]) //, options);
         var buffer = '';
         var errstream = '';
         var discoveredMacAddresses = [];
@@ -94,15 +98,16 @@ module.exports = NodeHelper.create({
     },
 
     scanNetworkIP: function() {
-        if (!this.config.devices) {
+			  let self = _ourThis
+        if (!self.config.devices) {
             return;
         }
         
-        this.log(this.name + " is performing ip address scan");
+        self.log(self.name + " is performing ip address scan");
 
         var discoveredDevices = [];
-        var self = this;
-        this.config.devices.forEach( function(device) {
+
+        self.config.devices.forEach( function(device) {
             self.log(self.name + " is checking device: ", device.name);
             if ("ipAddress" in device) {
                 self.log(self.name + " is pinging ", device.ipAddress);
@@ -140,7 +145,7 @@ module.exports = NodeHelper.create({
 
     log: function(message, object) {
         // Log if config is missing or in debug mode
-        if (!this.config || this.config.debug) {
+        if (!_ourThis.config ||_ourThis.config.debug) {
             if (object) {
                 console.log(message, object);
             } else {
