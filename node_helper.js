@@ -13,41 +13,41 @@ const sudo = require("sudo");
 let_ourThis=null;
 module.exports = NodeHelper.create({
     
-    start: function function_name () {
-				_ourThis=this;			
-        this.log("Starting module: " + this.name);
+    start: function()  {
+        _ourThis=this;      
+        this.log("Starting module in node_helper: " + this.name);
 
     },
 
     // Override socketNotificationReceived method.
     socketNotificationReceived: function(notification, payload) {
-			let self = _ourThis
+      let self = _ourThis
         self.log(self.name + " received " + notification);
 
         if (notification === "CONFIG") {
             self.config = payload;
-            return true;
         }
 
         if (notification === "SCAN_NETWORK") {
             self.scanNetworkMAC();
             self.scanNetworkIP();
-            return true;
         }
+				
+				self.log(self.name + " completed " + notification);
 
     },
 
     scanNetworkMAC: function() {
-			  let self = _ourThis;
+        let self = _ourThis;
         self.log(self.name + " is performing arp-scan");
 
 
         // Target hosts/network supplied in config or entire localnet
         var arpHosts = self.config.network || '-l';
-				var options = {              
-						cachePassword: true,
-						prompt: 'Password,' + self.config.Password     // put your password where ???? are (notice the quotes around)
-				}
+        var options = {              
+            cachePassword: true,
+            prompt: 'Password,' + self.config.Password     // put your password where ???? are (notice the quotes around)
+        }
         var arp = sudo(['arp-scan', '-q', arpHosts]) //, options);
         var buffer = '';
         var errstream = '';
@@ -98,7 +98,7 @@ module.exports = NodeHelper.create({
     },
 
     scanNetworkIP: function() {
-			  let self = _ourThis
+        let self = _ourThis
         if (!self.config.devices) {
             return;
         }
